@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poolesville Barn — Layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#E9E2D4;--sheet:#F5F1E7;--floor:#FCFAF4;--ink:#1E1C1A;--soft:#7A7266;
+ --rule:#A8997F;--timber:#6B5A44;--cer:#8C1D24;--tbl:#2E5A4C;--sel:#1B6FA8;--gold:#B8860B;
+ --grid:#DCD3BF;--gridM:#CBBFA6}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:'Barlow',system-ui,sans-serif;font-size:15px;line-height:1.4}
+.mast{border-bottom:2px solid var(--ink);padding:12px 20px 8px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 22px}
+.mast h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:25px;letter-spacing:.055em;text-transform:uppercase;margin:0;line-height:1}
+.mast .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);padding-bottom:2px}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+.sheet{padding:14px 20px 34px;min-width:0}
+.drawing{background:var(--sheet);border:1px solid var(--rule);padding:10px}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+.rail{border-left:1px solid var(--rule);padding:14px 16px 70px;background:rgba(255,255,255,.24);position:sticky;top:0;max-height:100vh;overflow-y:auto}
+@media(max-width:1000px){.rail{position:static;max-height:none;border-left:0;border-top:1px solid var(--rule)}}
+.rail h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+ margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--rule)}
+.rail h2:first-child{margin-top:0}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--ink)}
+.modes button{border:0;cursor:pointer;background:transparent;font-family:'Barlow Condensed',sans-serif;font-weight:600;
+ font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:9px 2px;color:var(--ink);border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.modes button:nth-child(3n){border-right:0}
+.modes button:nth-child(n+4){border-bottom:0}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.btn{width:100%;border:1.5px solid var(--ink);background:transparent;cursor:pointer;padding:7px;margin-top:5px;
+ font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.btn:hover{background:var(--ink);color:var(--sheet)}
+.btn.warn{border-color:var(--cer);color:var(--cer)}.btn.warn:hover{background:var(--cer);color:var(--sheet)}
+.btn.go{background:var(--ink);color:var(--sheet)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.field{display:grid;grid-template-columns:1fr 68px;gap:7px;align-items:center;margin-bottom:5px}
+.field.wide{grid-template-columns:1fr}
+.field label{font-size:13px;line-height:1.15}
+.field input,.field select{width:100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:5px;
+ border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:0}
+.field input:focus,.field select:focus{outline:2px solid var(--gold);outline-offset:-1px}
+.chk{display:flex;gap:7px;align-items:center;margin:5px 0;font-size:13px}
+.chk input{accent-color:var(--sel);width:15px;height:15px}
+.readout{font-family:'IBM Plex Mono',monospace;font-size:11.5px;display:flex;justify-content:space-between;gap:8px;
+ padding:4px 0;border-bottom:1px dotted var(--rule)}
+.big{font-size:15px;font-weight:600}
+.tip{font-size:12.3px;color:var(--soft);margin:7px 0 0}
+kbd{font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--rule);padding:0 4px;background:#fff}
+@page{size:Letter portrait;margin:.45in}
+@media print{
+ .mast,.rail,.tip{display:none}
+ .wrap{grid-template-columns:1fr}
+ .sheet{padding:0}
+ body{background:#fff}
+ .drawing{border:0;background:#fff;padding:0}
+ /* one page, whole barn: constrain by height so it never spills */
+ .drawing svg{width:auto;height:9.9in;max-width:7.5in;margin:0 auto;display:block}
+}
+</style>
+</head>
+<body>
+<div class="mast">
+  <h1>Poolesville Barn</h1>
+  <div class="sub">Layout &middot; 72&prime; × 47&prime; on a 1 ft grid</div>
+  <div class="sub" style="margin-left:auto">North up &middot; west entry left</div>
+</div>
+
+<div class="wrap">
+  <div class="sheet">
+    <div class="drawing"><svg id="plan" tabindex="0"></svg></div>
+    <p class="tip"><kbd>R</kbd> rotate 5&deg; &middot; <kbd>Shift R</kbd> reverse &middot; <kbd>F</kbd> flip &middot; arrows nudge &middot;
+      <kbd>Delete</kbd> remove &middot; <kbd>Ctrl Z</kbd> undo &middot; <kbd>Shift</kbd>+click multi-select &middot; drag a box to select.</p>
+  </div>
+
+  <aside class="rail">
+    <h2>Tool</h2>
+    <div class="modes">
+      <button id="mSel" aria-pressed="true">Select</button>
+      <button id="mChair" aria-pressed="false">Chair</button>
+      <button id="mRow" aria-pressed="false">Row</button>
+      <button id="mTable" aria-pressed="false">Table</button>
+      <button id="mLabel" aria-pressed="false">Label</button>
+      <button id="mAim" aria-pressed="false">Aim</button>
+    </div>
+
+    <h2>Table</h2>
+    <div class="row3">
+      <button class="btn" id="t5" style="margin-top:0">5 ft</button>
+      <button class="btn" id="t6" style="margin-top:0">6 ft</button>
+      <button class="btn" id="t8" style="margin-top:0">8 ft</button>
+    </div>
+    <div class="row3">
+      <button class="btn" id="r36">36&Prime; rd</button>
+      <button class="btn" id="r48">48&Prime; rd</button>
+      <button class="btn" id="r60">60&Prime; rd</button>
+    </div>
+    <div class="field" style="margin-top:6px"><label>Round diameter, inches</label><input id="tDia" type="number" value="60" step="6"></div>
+    <div class="field" style="margin-top:6px"><label>Length, ft</label><input id="tLen" type="number" value="6" step="0.5"></div>
+    <div class="field"><label>Width, inches</label><input id="tWid" type="number" value="30" step="1"></div>
+    <div class="field"><label>Angle, degrees</label><input id="tRot" type="number" value="0" step="5"></div>
+    <label class="chk"><input type="checkbox" id="tNum" checked> Number tables as I place them</label>
+    <div class="field"><label>Next number</label><input id="tNext" type="number" value="1" step="1"></div>
+
+    <h2>Seat a table</h2>
+    <div class="field"><label>Chairs per long side</label><input id="sSide" type="number" value="3" step="1" min="0"></div>
+    <div class="field"><label>Chairs at each end</label><input id="sEnd" type="number" value="1" step="1" min="0" max="2"></div>
+    <div class="field"><label>Chairs round a round</label><input id="sRound" type="number" value="8" step="1" min="1"></div>
+    <div class="field"><label>Gap from edge, inches</label><input id="sGap" type="number" value="4" step="1"></div>
+    <button class="btn" id="seatBtn">Tuck chairs around selected</button>
+    <button class="btn" id="unseatBtn">Remove those chairs</button>
+
+    <h2>Label</h2>
+    <div class="field wide"><input id="labText" type="text" value="Table 1" placeholder="Bar, Buffet 1, Table 3&hellip;"></div>
+    <div class="field"><label>Text size</label><input id="labSize" type="number" value="14" step="1"></div>
+    <div class="field"><label>Angle, degrees</label><input id="labRot" type="number" value="0" step="5"></div>
+    <button class="btn" id="editLab">Edit selected label</button>
+
+    <h2>Grid</h2>
+    <label class="chk"><input type="checkbox" id="gOn" checked> Show grid</label>
+    <label class="chk"><input type="checkbox" id="pOn" checked> Show floor boards</label>
+    <div class="field"><label>Spacing, ft</label><input id="gSize" type="number" value="1" step="0.5" min="0.5"></div>
+    <div class="field"><label>Heavy every</label><input id="gMaj" type="number" value="5" step="1" min="1"></div>
+    <div class="field"><label>Snap to</label>
+      <select id="snapSel"><option value="0">Off</option><option value="0.25">3 in</option>
+        <option value="0.5" selected>6 in</option><option value="1">1 ft</option></select></div>
+
+    <h2>Chair row</h2>
+    <div class="field"><label>Seat spacing, inches</label><input id="rowGap" type="number" value="20" step="1"></div>
+    <label class="chk"><input type="checkbox" id="faceFlip"> Face the other way</label>
+    <label class="chk"><input type="checkbox" id="aimOn" checked> Aim rows at the focal point</label>
+    <div class="field wide"><select id="chPre">
+        <option value="18,20" selected>Folding chair &mdash; 18 × 20</option>
+        <option value="17.5,19">Folding, narrow &mdash; 17.5 × 19</option>
+        <option value="17,17">Wooden side chair &mdash; 17 × 17</option>
+        <option value="16,16">Chiavari &mdash; 16 × 16</option>
+        <option value="72,12">Bench, 6 ft &mdash; 72 × 12</option>
+        <option value="96,12">Bench, 8 ft &mdash; 96 × 12</option>
+        <option value="">Custom&hellip;</option>
+      </select></div>
+    <div class="field"><label>Seat width, inches</label><input id="chW" type="number" value="18" step="0.5"></div>
+    <div class="field"><label>Seat depth, inches</label><input id="chD" type="number" value="20" step="0.5"></div>
+    <button class="btn" id="resizeSel">Apply size to selected</button>
+
+    <h2>View</h2>
+    <div class="row3">
+      <button class="btn" id="zOut" style="margin-top:0">&minus;</button>
+      <button class="btn" id="zFit" style="margin-top:0">Fit</button>
+      <button class="btn" id="zIn" style="margin-top:0">+</button>
+    </div>
+    <label class="chk"><input type="checkbox" id="panMode"> Hand tool &mdash; drag to pan</label>
+    <div class="readout"><span>Zoom</span><b id="rZoom">100%</b></div>
+    <p class="tip">Scroll to zoom on the pointer. Hold <kbd>Space</kbd> and drag to pan at any time. Printing always fits the whole barn to one page.</p>
+
+    <h2>Guides</h2>
+    <button class="btn" id="mGuide" style="margin-top:0">Draw a guide line</button>
+    <label class="chk"><input type="checkbox" id="guOn" checked> Show guides</label>
+    <button class="btn" id="fillGuide">Fill guide with chairs</button>
+    <button class="btn" id="snapGuide">Move selection onto guide</button>
+    <button class="btn" id="respace">Re-space selection evenly</button>
+    <p class="tip">A guide is a line you can drag, rotate and stretch by its ends. Nothing on it prints.</p>
+
+    <h2>History</h2>
+    <div class="row2">
+      <button class="btn" id="undoBtn" style="margin-top:0">&#8630; Undo</button>
+      <button class="btn" id="redoBtn" style="margin-top:0">Redo &#8631;</button>
+    </div>
+
+    <h2>Selection</h2>
+    <div class="row2">
+      <button class="btn" id="rotL" style="margin-top:0">&#8630; 5&deg;</button>
+      <button class="btn" id="rotR" style="margin-top:0">5&deg; &#8631;</button>
+      <button class="btn" id="rot15L">&#8630; 15&deg;</button>
+      <button class="btn" id="rot15R">15&deg; &#8631;</button>
+      <button class="btn" id="rot45L">&#8630; 45&deg;</button>
+      <button class="btn" id="rot45R">45&deg; &#8631;</button>
+    </div>
+    <button class="btn" id="aimSel">Aim at focus</button>
+    <div class="field" style="margin-top:6px"><label>Copy back by, inches</label><input id="dupGap" type="number" value="36" step="1"></div>
+    <button class="btn" id="dup">Copy behind</button>
+    <div class="row2">
+      <button class="btn" id="selAll">Select all</button>
+      <button class="btn warn" id="del">Delete</button>
+    </div>
+
+    <h2>Count</h2>
+    <div class="readout"><span>Chairs</span><b class="big" id="rChairs">0</b></div>
+    <div class="readout"><span>Rect 5 / 6 / 8 ft</span><b id="rTables">0 / 0 / 0</b></div>
+    <div class="readout"><span>Round tables</span><b id="rRound">0</b></div>
+    <div class="readout"><span>Labels</span><b id="rLabels">0</b></div>
+    <div class="readout"><span>Selected</span><b id="rSel">0</b></div>
+    <div class="field" style="margin-top:6px"><label>Chair target</label><input id="tgt" type="number" value="130" step="5"></div>
+    <div class="readout"><span>Still to place</span><b id="rGap">130</b></div>
+
+    <h2>Output</h2>
+    <button class="btn go" id="print">Print / save PDF</button>
+    <div class="row2">
+      <button class="btn" id="export">Export file</button>
+      <button class="btn" id="importBtn">Import file</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+    <button class="btn" id="showJson">Show layout as text</button>
+    <textarea id="jsonBox" style="display:none;width:100%;height:120px;margin-top:6px;font-family:'IBM Plex Mono',monospace;
+      font-size:10.5px;border:1px solid var(--rule);padding:6px;resize:vertical"></textarea>
+    <button class="btn" id="loadJson" style="display:none">Load from the text above</button>
+    <div class="row2"><button class="btn" id="save">Save slot</button><button class="btn" id="load">Load slot</button></div>
+    <button class="btn warn" id="clear">Clear everything</button>
+    <p class="tip" id="autoNote">Autosaving as you work.</p>
+  </aside>
+</div>
+
+<script>
+const B={NB:20,C1:16,C2:16,SB:20,aW:12,nave:23,aE:12,
+         wDoor:7,eDoor:10,eOff:8,clear:10,braceW:0.75};
+B.brace=(B.nave-B.clear)/2;
+B.L=B.NB+B.C1+B.C2+B.SB; B.W=B.aW+B.nave+B.aE;
+B.yN=B.NB; B.ySeam=B.NB+B.C1; B.yS=B.NB+B.C1+B.C2;
+B.colW=B.aW; B.colE=B.aW+B.nave; B.naveC=B.aW+B.nave/2;
+
+const FT=13, M=92, NSU='http://www.w3.org/2000/svg', DEG=180/Math.PI;
+const svg=document.getElementById('plan');
+const X=f=>M+f*FT, Y=f=>M+f*FT;
+const ftin=f=>{let w=Math.floor(f+1e-6),i=Math.round((f-w)*12);if(i===12){w++;i=0;}return i?`${w}'-${i}"`:`${w}'-0"`;};
+const el=(t,a,p)=>{const n=document.createElementNS(NSU,t);for(const k in a)n.setAttribute(k,a[k]);if(p)p.appendChild(n);return n;};
+const gv=id=>parseFloat(document.getElementById(id).value)||0;
+const ck=id=>document.getElementById(id).checked;
+const val=id=>document.getElementById(id).value;
+
+let items=[], sel=new Set(), mode='select', nextId=1, focal=null, tShape='rect', printing=false;
+const FULL={x:0,y:0,w:B.W*FT+M*2+40,h:B.L*FT+M*2+60};
+let view={x:FULL.x,y:FULL.y,w:FULL.w,h:FULL.h}, spaceDown=false;
+function applyView(){
+  svg.setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
+  const z=document.getElementById('rZoom');
+  if(z)z.textContent=Math.round(FULL.w/view.w*100)+'%';
+}
+function fitView(){view={x:FULL.x,y:FULL.y,w:FULL.w,h:FULL.h};applyView();}
+function zoomAbout(k,mx,my){
+  const nw=Math.min(FULL.w*4,Math.max(FULL.w*0.12,view.w*k)), sc=nw/view.w;
+  view.x=mx-(mx-view.x)*sc; view.y=my-(my-view.y)*sc;
+  view.w=nw; view.h*=sc; applyView();
+}
+let undoStack=[], redoStack=[];
+const stateStr=()=>JSON.stringify({items,focal,nextId});
+let autoT=null;
+function autosave(){
+  clearTimeout(autoT);
+  autoT=setTimeout(()=>{
+    try{
+      localStorage.setItem('barnLayoutAuto',stateStr());
+      const n=document.getElementById('autoNote');
+      if(n)n.textContent='Autosaved '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    }catch(_){
+      const n=document.getElementById('autoNote');
+      if(n)n.textContent='Autosave unavailable here — use Export file.';
+    }
+  },400);
+}
+function snapshot(){undoStack.push(stateStr()); if(undoStack.length>80)undoStack.shift();
+  redoStack.length=0; updUndo();}
+function restore(str){const d=JSON.parse(str); items=d.items; focal=d.focal; nextId=d.nextId;
+  sel.clear(); render(); updUndo();}
+function undo(){if(!undoStack.length)return; redoStack.push(stateStr()); restore(undoStack.pop());}
+function redo(){if(!redoStack.length)return; undoStack.push(stateStr()); restore(redoStack.pop());}
+function updUndo(){
+  const u=document.getElementById('undoBtn'), r=document.getElementById('redoBtn');
+  if(!u)return;
+  u.disabled=!undoStack.length; r.disabled=!redoStack.length;
+  u.style.opacity=undoStack.length?1:.4; r.style.opacity=redoStack.length?1:.4;}
+const byId=id=>items.find(o=>o.id===id);
+const selItems=()=>items.filter(o=>sel.has(o.id));
+const facingTo=(x,y,tx,ty)=>Math.atan2(tx-x,-(ty-y))*DEG;
+const norm=r=>((r%360)+360)%360;
+function snap(v){const s=parseFloat(val('snapSel'));return s?Math.round(v/s)*s:v;}
+const chW=()=>gv('chW')/12, chD=()=>gv('chD')/12;
+const cw=o=>o.w||18/12, cd=o=>o.d||20/12;
+
+/* ---------------- shell ---------------- */
+function grid(g){
+  if(!ck('gOn'))return;
+  const gs=Math.max(0.25,gv('gSize')), mj=Math.max(1,Math.round(gv('gMaj')));
+  const gg=el('g',{},g); let i=0;
+  for(let x=0;x<=B.W+1e-6;x+=gs,i++)
+    el('line',{x1:X(x),y1:Y(0),x2:X(x),y2:Y(B.L),stroke:i%mj?'var(--grid)':'var(--gridM)','stroke-width':i%mj?.4:.85,opacity:.85},gg);
+  i=0;
+  for(let y=0;y<=B.L+1e-6;y+=gs,i++)
+    el('line',{x1:X(0),y1:Y(y),x2:X(B.W),y2:Y(y),stroke:i%mj?'var(--grid)':'var(--gridM)','stroke-width':i%mj?.4:.85,opacity:.85},gg);
+}
+function planks(g){
+  if(!ck('pOn'))return;
+  const w=8/12, tints=['#E7DAC0','#E2D4B7','#EBE0C9','#DFD1B2','#E9DEC5','#E4D8BE'];
+  const butts=[0,B.NB,B.NB+B.C1,B.NB+B.C1+B.C2,B.L];
+  let i=0;
+  for(let x=0;x<B.W-1e-6;x+=w,i++){
+    const bw=Math.min(w,B.W-x);
+    for(let b=0;b<butts.length-1;b++){
+      const y0=butts[b], y1=butts[b+1];
+      const t=tints[(i*7+b*3)%tints.length];
+      el('rect',{x:X(x),y:Y(y0),width:bw*FT,height:(y1-y0)*FT,fill:t},g);
+    }
+    el('line',{x1:X(x),y1:Y(0),x2:X(x),y2:Y(B.L),stroke:'#C6B48F','stroke-width':.55,opacity:.75},g);
+  }
+  butts.forEach(y=>el('line',{x1:X(0),y1:Y(y),x2:X(B.W),y2:Y(y),stroke:'#BFAC86','stroke-width':.7,opacity:.6},g));
+}
+function shell(g){
+  el('rect',{x:X(0),y:Y(0),width:B.W*FT,height:B.L*FT,fill:ck('pOn')?'#E7DAC0':'var(--floor)'},g);
+  planks(g);
+  const d=el('defs',{},g);
+  const h=el('pattern',{id:'hh',width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},d);
+  el('line',{x1:0,y1:0,x2:0,y2:7,stroke:'#8A7659','stroke-width':1.1,opacity:.5},h);
+  grid(g);
+  [[0,B.yN],[B.yS,B.L]].forEach(([y0,y1])=>
+    el('rect',{x:X(0),y:Y(y0),width:B.aW*FT,height:(y1-y0)*FT,fill:'url(#hh)',
+      stroke:'var(--timber)','stroke-width':1.3,'stroke-dasharray':'9 5'},g));
+  const wall=(x1,y1,x2,y2,w)=>el('line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),stroke:'var(--ink)',
+    'stroke-width':w||4.6,'stroke-linecap':'square'},g);
+  wall(0,0,B.W,0); wall(0,B.L,B.W,B.L);
+  const wN=(B.yN+B.ySeam)/2, wS=(B.ySeam+B.yS)/2, wd=B.wDoor/2;
+  wall(0,0,0,wN-wd); wall(0,wN+wd,0,wS-wd); wall(0,wS+wd,0,B.L);
+  [[wN,-1],[wS,1]].forEach(([c,dr])=>{const p0=dr<0?c-wd-B.wDoor:c+wd;
+    el('line',{x1:X(0)-7,y1:Y(p0),x2:X(0)-7,y2:Y(p0+B.wDoor),stroke:'var(--timber)','stroke-width':4.6},g);});
+  const eN=B.ySeam-B.eOff, eS=B.ySeam+B.eOff, ed=B.eDoor/2;
+  wall(B.W,0,B.W,eN-ed); wall(B.W,eN+ed,B.W,eS-ed); wall(B.W,eS+ed,B.W,B.L);
+  [[eN,-1],[eS,1]].forEach(([c,dr])=>{const p0=dr<0?c-ed-B.eDoor:c+ed;
+    el('line',{x1:X(B.W)+7,y1:Y(p0),x2:X(B.W)+7,y2:Y(p0+B.eDoor),stroke:'var(--timber)','stroke-width':4.6},g);});
+  el('rect',{x:X(B.W-2.2),y:Y(B.ySeam-2.5),width:2.2*FT,height:5*FT,fill:'#DED4BF',stroke:'var(--ink)','stroke-width':1.3},g);
+  [B.yN,B.yS].forEach(y=>{
+    el('line',{x1:X(0),y1:Y(y),x2:X(B.W),y2:Y(y),stroke:'var(--ink)','stroke-width':1.6,opacity:.28},g);
+    [[B.colW,1],[B.colE,-1]].forEach(([px,sd])=>{
+      const x0=sd>0?px:px-B.brace;
+      el('rect',{x:X(x0),y:Y(y)-B.braceW/2*FT,width:B.brace*FT,height:B.braceW*FT,fill:'var(--timber)',opacity:.85},g);});});
+  el('line',{x1:X(0),y1:Y(B.ySeam),x2:X(B.W),y2:Y(B.ySeam),stroke:'#B3A88F','stroke-width':1.1,'stroke-dasharray':'6 7'},g);
+  [B.colW,B.colE].forEach(px=>{
+    el('line',{x1:X(px),y1:Y(0),x2:X(px),y2:Y(B.L),stroke:'#B3A88F','stroke-width':1,'stroke-dasharray':'2 8'},g);});
+  [0,B.colW,B.colE,B.W].forEach(px=>[0,B.yN,B.ySeam,B.yS,B.L].forEach(py=>
+    el('rect',{x:X(px)-6.5,y:Y(py)-6.5,width:13,height:13,fill:'var(--timber)'},g)));
+}
+function dim(g,x1,y1,x2,y2,label){
+  const c='var(--soft)';
+  el('line',{x1,y1,x2,y2,stroke:c,'stroke-width':1},g);
+  const a=Math.atan2(y2-y1,x2-x1);
+  [[x1,y1],[x2,y2]].forEach(([px,py])=>{const dx=Math.cos(a+Math.PI/4)*6,dy=Math.sin(a+Math.PI/4)*6;
+    el('line',{x1:px-dx,y1:py-dy,x2:px+dx,y2:py+dy,stroke:c,'stroke-width':1},g);});
+  const mx=(x1+x2)/2,my=(y1+y2)/2,v=Math.abs(x2-x1)<1;
+  const pad=el('rect',{x:mx-36,y:my-8,width:72,height:16,fill:'var(--sheet)'},g);
+  if(v)pad.setAttribute('transform',`rotate(-90 ${mx} ${my})`);
+  const t=el('text',{x:mx,y:my+4,fill:c,'font-family':'IBM Plex Mono, monospace','font-size':11.5,'text-anchor':'middle'},g);
+  if(v)t.setAttribute('transform',`rotate(-90 ${mx} ${my})`);
+  t.textContent=label;
+}
+function dims(g){
+  let y=0;
+  [B.NB,B.C1,B.C2,B.SB].forEach(h=>{dim(g,X(0)-32,Y(y),X(0)-32,Y(y+h),ftin(h));y+=h;});
+  dim(g,X(0)-60,Y(0),X(0)-60,Y(B.L),ftin(B.L));
+  dim(g,X(0),Y(B.L)+34,X(B.colW),Y(B.L)+34,ftin(B.aW));
+  dim(g,X(B.colW),Y(B.L)+34,X(B.colE),Y(B.L)+34,ftin(B.nave));
+  dim(g,X(B.colE),Y(B.L)+34,X(B.W),Y(B.L)+34,ftin(B.aE));
+  dim(g,X(0),Y(B.L)+62,X(B.W),Y(B.L)+62,ftin(B.W));
+  dim(g,X(B.naveC-B.clear/2),Y(B.yS)-19,X(B.naveC+B.clear/2),Y(B.yS)-19,ftin(B.clear)+' clear');
+  dim(g,X(B.naveC-B.clear/2),Y(B.yN)+19,X(B.naveC+B.clear/2),Y(B.yN)+19,ftin(B.clear)+' clear');
+  const nx=X(B.W)+52;
+  el('line',{x1:nx,y1:Y(13),x2:nx,y2:Y(3),stroke:'var(--ink)','stroke-width':1.5},g);
+  el('path',{d:`M ${nx} ${Y(0.6)} l -5 8 l 5 -3 l 5 3 z`,fill:'var(--ink)'},g);
+  el('text',{x:nx,y:Y(18),fill:'var(--ink)','font-size':14,'text-anchor':'middle','letter-spacing':'2'},g).textContent='N';
+  const sy=Y(B.L)+86;
+  for(let i=0;i<4;i++)el('rect',{x:X(0)+i*5*FT,y:sy,width:5*FT,height:7,
+    fill:i%2?'var(--floor)':'var(--ink)',stroke:'var(--ink)','stroke-width':.9},g);
+  el('text',{x:X(0)+20*FT+9,y:sy+8,fill:'var(--soft)','font-size':11.5,'font-family':'IBM Plex Mono, monospace'},g).textContent='20 ft';
+  const n=counts();
+  el('text',{x:X(B.W),y:sy+8,fill:'var(--soft)','font-size':11.5,'font-family':'IBM Plex Mono, monospace','text-anchor':'end'},g)
+    .textContent=n.chairs+' chairs · '+n.tables+' tables';
+}
+
+/* ---------------- items ---------------- */
+function drawItem(o,g,on){
+  const q=el('g',{transform:`translate(${X(o.x)},${Y(o.y)}) rotate(${o.r})`},g);
+  if(o.t==='chair'){
+    const w=cw(o), d=cd(o);
+    const col=on?'var(--sel)':'var(--cer)';
+    el('rect',{x:-w/2*FT,y:-d/2*FT,width:w*FT,height:d*FT,
+      fill:on?'rgba(27,111,168,.28)':'rgba(140,29,36,.20)',
+      stroke:col,'stroke-width':on?1.8:1},q);
+    /* backrest sits behind the seat; the chair faces the opposite way */
+    el('line',{x1:-w/2*FT,y1:d/2*FT,x2:w/2*FT,y2:d/2*FT,stroke:col,'stroke-width':3.4},q);
+    el('path',{d:`M ${-w*0.16*FT} ${-d/2*FT} L 0 ${(-d/2-0.18)*FT} L ${w*0.16*FT} ${-d/2*FT}`,
+      fill:'none',stroke:col,'stroke-width':1.1,opacity:.85},q);
+  } else if(o.t==='table'){
+    const fill=on?'rgba(27,111,168,.22)':'rgba(46,90,76,.17)', st=on?'var(--sel)':'var(--tbl)';
+    if(o.shape==='round'){
+      el('circle',{cx:0,cy:0,r:o.dia/2*FT,fill,stroke:st,'stroke-width':on?2:1.4},q);
+      el('text',{x:0,y:4,fill:st,'font-family':'IBM Plex Mono, monospace','font-size':10.5,
+        'text-anchor':'middle'},q).textContent=Math.round(o.dia*12)+'"';
+    } else {
+      el('rect',{x:-o.len/2*FT,y:-o.wid/2*FT,width:o.len*FT,height:o.wid*FT,fill,stroke:st,'stroke-width':on?2:1.4},q);
+      el('text',{x:0,y:4,fill:st,'font-family':'IBM Plex Mono, monospace','font-size':10.5,
+        'text-anchor':'middle'},q).textContent=o.len+"'";
+    }
+  } else if(o.t==='guide'){
+    if(!ck('guOn')||printing)return;
+    const col=on?'var(--sel)':'var(--gold)';
+    el('line',{x1:-o.len/2*FT,y1:0,x2:o.len/2*FT,y2:0,stroke:col,'stroke-width':1.4,'stroke-dasharray':'8 5'},q);
+    [-1,1].forEach(k=>el('circle',{cx:k*o.len/2*FT,cy:0,r:5,fill:'var(--sheet)',stroke:col,'stroke-width':1.6},q));
+    el('path',{d:`M -7 -11 L 0 -20 L 7 -11`,fill:'none',stroke:col,'stroke-width':1.2,opacity:.9},q);
+    const fit=Math.max(1,Math.floor(o.len/(gv('rowGap')/12)+1e-6)+1);
+    el('text',{x:0,y:-26,fill:col,'font-family':'IBM Plex Mono, monospace','font-size':11,
+      'text-anchor':'middle'},q).textContent=ftin(o.len)+' · fits '+fit;
+  } else if(o.t==='label'){
+    const w=Math.max(20,o.text.length*o.size*0.58), h=o.size*1.5;
+    el('rect',{x:-w/2,y:-h/2,width:w,height:h,fill:'rgba(245,241,231,.88)',
+      stroke:on?'var(--sel)':'none','stroke-width':on?1.6:0},q);
+    el('text',{x:0,y:o.size*0.36,fill:on?'var(--sel)':'var(--ink)','font-family':'Barlow Condensed, sans-serif',
+      'font-weight':600,'font-size':o.size,'letter-spacing':'.06em','text-anchor':'middle'},q).textContent=o.text;
+  }
+}
+function counts(){
+  const c={chairs:0,tables:0,labels:0,t5:0,t6:0,t8:0,rd:0};
+  items.forEach(o=>{
+    if(o.t==='chair')c.chairs++;
+    else if(o.t==='table'){c.tables++; if(o.shape==='round')c.rd++;
+      else if(o.len===5)c.t5++; else if(o.len===6)c.t6++; else if(o.len===8)c.t8++;}
+    else if(o.t==='label')c.labels++;});
+  return c;
+}
+let gOverlay;
+function render(){
+  svg.innerHTML='';
+  applyView();
+  shell(el('g',{},svg));
+  const gT=el('g',{},svg), gC=el('g',{},svg), gL=el('g',{},svg);
+  items.forEach(o=>drawItem(o, o.t==='table'?gT:o.t==='chair'?gC:gL, sel.has(o.id)));
+  if(focal){
+    const f=el('g',{},svg);
+    el('circle',{cx:X(focal.x),cy:Y(focal.y),r:9,fill:'none',stroke:'var(--gold)','stroke-width':1.6},f);
+    el('line',{x1:X(focal.x)-14,y1:Y(focal.y),x2:X(focal.x)+14,y2:Y(focal.y),stroke:'var(--gold)','stroke-width':1.4},f);
+    el('line',{x1:X(focal.x),y1:Y(focal.y)-14,x2:X(focal.x),y2:Y(focal.y)+14,stroke:'var(--gold)','stroke-width':1.4},f);
+  }
+  gOverlay=el('g',{},svg);
+  dims(el('g',{},svg));
+  autosave();
+  const n=counts();
+  document.getElementById('rChairs').textContent=n.chairs;
+  document.getElementById('rTables').textContent=`${n.t5} / ${n.t6} / ${n.t8}`;
+  document.getElementById('rRound').textContent=n.rd;
+  document.getElementById('rLabels').textContent=n.labels;
+  document.getElementById('rSel').textContent=sel.size;
+  document.getElementById('rGap').textContent=Math.max(0,gv('tgt')-n.chairs);
+}
+
+/* ---------------- geometry ---------------- */
+function pt(e){const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+  return{x:((e.clientX-r.left)/r.width*vb.width-M)/FT,y:((e.clientY-r.top)/r.height*vb.height-M)/FT};}
+function bounds(o){
+  if(o.t==='chair')return[cw(o),cd(o)];
+  if(o.t==='table')return o.shape==='round'?[o.dia,o.dia]:[o.len,o.wid];
+  if(o.t==='guide')return[o.len,1.0];
+  const w=Math.max(20,o.text.length*o.size*0.58)/FT, h=o.size*1.5/FT; return[w,h];
+}
+function hit(p){
+  for(let i=items.length-1;i>=0;i--){const o=items[i];
+    if(o.t==='guide'&&!ck('guOn'))continue;
+    const [w,h]=bounds(o), a=-o.r/DEG, dx=p.x-o.x, dy=p.y-o.y;
+    const lx=dx*Math.cos(a)-dy*Math.sin(a), ly=dx*Math.sin(a)+dy*Math.cos(a);
+    if(Math.abs(lx)<=w/2&&Math.abs(ly)<=h/2)return o;}
+  return null;
+}
+function addChair(x,y,r,w,d,raw){const o={id:nextId++,t:'chair',x:raw?x:snap(x),y:raw?y:snap(y),r:norm(r),
+    w:w||chW(), d:d||chD()};items.push(o);return o;}
+function addTable(x,y){
+  const r=norm(gv('tRot'));
+  const o=(tShape==='round')
+    ? {id:nextId++,t:'table',shape:'round',x:snap(x),y:snap(y),r,dia:gv('tDia')/12}
+    : {id:nextId++,t:'table',shape:'rect',x:snap(x),y:snap(y),r,len:gv('tLen'),wid:gv('tWid')/12};
+  items.push(o);
+  if(ck('tNum')){
+    const n=Math.round(gv('tNext'));
+    items.push({id:nextId++,t:'label',x:o.x,y:o.y,r,text:String(n),size:15,forTable:o.id});
+    document.getElementById('tNext').value=n+1;
+  }
+  return o;
+}
+function addLabel(x,y){
+  const o={id:nextId++,t:'label',x:snap(x),y:snap(y),r:norm(gv('labRot')),
+           text:val('labText')||'Label',size:Math.max(8,gv('labSize'))};
+  items.push(o); return o;
+}
+function rowPoints(a,b){
+  const gap=gv('rowGap')/12, dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
+  const n=Math.max(1,Math.floor(len/gap+1e-6)+1);
+  const ux=len?dx/len:1, uy=len?dy/len:0;
+  let fx=uy, fy=-ux; if(ck('faceFlip')){fx=-uy;fy=ux;}
+  const base=Math.atan2(fx,-fy)*DEG, out=[];
+  for(let i=0;i<n;i++){const px=a.x+ux*gap*i, py=a.y+uy*gap*i;
+    out.push({t:'chair',x:px,y:py,w:chW(),d:chD(),
+      r:(ck('aimOn')&&focal)?facingTo(px,py,focal.x,focal.y):base});}
+  return out;
+}
+function seatTable(tb){
+  const gap=gv('sGap')/12, w=chW(), d=chD();
+  if(tb.shape==='round'){
+    const n=Math.max(1,Math.round(gv('sRound'))), R=tb.dia/2+gap+d/2;
+    for(let i=0;i<n;i++){
+      const th=(i/n)*Math.PI*2 - Math.PI/2 + tb.r/DEG;
+      const gx=tb.x+Math.cos(th)*R, gy=tb.y+Math.sin(th)*R;
+      items.push({id:nextId++,t:'chair',x:gx,y:gy,r:norm(facingTo(gx,gy,tb.x,tb.y)),w,d,ofTable:tb.id});
+    }
+    return;
+  }
+  const per=Math.max(0,Math.round(gv('sSide'))), ends=Math.max(0,Math.round(gv('sEnd')));
+  const a=tb.r/DEG, co=Math.cos(a), si=Math.sin(a);
+  const put=(lx,ly,lr)=>{
+    const gx=tb.x+lx*co-ly*si, gy=tb.y+lx*si+ly*co;
+    items.push({id:nextId++,t:'chair',x:gx,y:gy,r:norm(tb.r+lr),w,d,ofTable:tb.id});};
+  const off=tb.wid/2+gap+d/2;
+  for(let i=0;i<per;i++){
+    const lx=-tb.len/2+tb.len*(i+0.5)/per;
+    put(lx,+off,0); put(lx,-off,180);
+  }
+  const offEnd=tb.len/2+gap+d/2;
+  for(let i=0;i<ends;i++){
+    const ly=ends===1?0:(i===0?-tb.wid/4:tb.wid/4);
+    put(+offEnd,ly,270); put(-offEnd,ly,90);
+  }
+}
+const gDir=o=>[Math.cos(o.r/DEG),Math.sin(o.r/DEG)];
+function gEnds(o){const [ux,uy]=gDir(o);
+  return[{x:o.x-ux*o.len/2,y:o.y-uy*o.len/2},{x:o.x+ux*o.len/2,y:o.y+uy*o.len/2}];}
+function gFromEnds(o,a,b){
+  o.x=(a.x+b.x)/2; o.y=(a.y+b.y)/2;
+  o.len=Math.max(0.5,Math.hypot(b.x-a.x,b.y-a.y));
+  o.r=norm(Math.atan2(b.y-a.y,b.x-a.x)*DEG);
+}
+const oneGuide=()=>{const g=selItems().filter(o=>o.t==='guide');return g.length===1?g[0]:null;};
+function placeAlong(o,n,spacing,assign){
+  const [ux,uy]=gDir(o), start=-(n-1)/2*spacing;
+  for(let i=0;i<n;i++){
+    const t=start+i*spacing, x=o.x+ux*t, y=o.y+uy*t;
+    assign(i,x,y,(ck('aimOn')&&focal)?facingTo(x,y,focal.x,focal.y):o.r);
+  }
+}
+function rotateSel(deg){
+  const s=selItems(); if(!s.length)return; snapshot();
+  const cx=s.reduce((a,o)=>a+o.x,0)/s.length, cy=s.reduce((a,o)=>a+o.y,0)/s.length;
+  const a=deg/DEG, co=Math.cos(a), si=Math.sin(a);
+  s.forEach(o=>{const dx=o.x-cx,dy=o.y-cy;
+    o.x=cx+dx*co-dy*si; o.y=cy+dx*si+dy*co; o.r=norm(o.r+deg);});
+  render();
+}
+function moveSel(dx,dy){if(!sel.size)return; snapshot(); selItems().forEach(o=>{o.x+=dx;o.y+=dy;});render();}
+
+/* ---------------- pointer ---------------- */
+let drag=null,marq=null,rowDrag=null,guideDrag=null,endDrag=null,pan=null;
+svg.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=svg.getBoundingClientRect();
+  const mx=view.x+(e.clientX-r.left)/r.width*view.w;
+  const my=view.y+(e.clientY-r.top)/r.height*view.h;
+  zoomAbout(e.deltaY>0?1.12:1/1.12,mx,my);
+},{passive:false});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&!/input|select|textarea/i.test(e.target.tagName||'')){spaceDown=true;e.preventDefault();}});
+document.addEventListener('keyup',e=>{if(e.code==='Space')spaceDown=false;});
+svg.addEventListener('pointerdown',e=>{
+  svg.focus();
+  if(spaceDown||e.button===1||ck('panMode')){
+    const r=svg.getBoundingClientRect();
+    pan={cx:e.clientX,cy:e.clientY,vx:view.x,vy:view.y,rw:r.width,rh:r.height};
+    svg.setPointerCapture(e.pointerId); e.preventDefault(); return;
+  }
+  const p=pt(e);
+  if(mode==='aim'){snapshot();focal={x:snap(p.x),y:snap(p.y)};render();return;}
+  if(mode==='chair'){snapshot();const o=addChair(p.x,p.y,(focal&&ck('aimOn'))?facingTo(p.x,p.y,focal.x,focal.y):gv('tRot'));
+    sel=new Set([o.id]);render();return;}
+  if(mode==='table'){snapshot();const o=addTable(p.x,p.y);sel=new Set([o.id]);render();return;}
+  if(mode==='label'){snapshot();const o=addLabel(p.x,p.y);sel=new Set([o.id]);render();return;}
+  if(mode==='guide'){snapshot();
+    guideDrag={a:{x:snap(p.x),y:snap(p.y)},o:null};
+    svg.setPointerCapture(e.pointerId);return;}
+  const gsel=oneGuide();
+  if(gsel&&ck('guOn')){
+    const ends=gEnds(gsel);
+    for(let k=0;k<2;k++){
+      if(Math.hypot(p.x-ends[k].x,p.y-ends[k].y)<0.9){
+        snapshot(); endDrag={g:gsel,fixed:ends[1-k]};
+        svg.setPointerCapture(e.pointerId);return;}
+    }
+  }
+  if(mode==='row'){snapshot();rowDrag={a:{x:snap(p.x),y:snap(p.y)},b:{x:snap(p.x),y:snap(p.y)}};
+    svg.setPointerCapture(e.pointerId);return;}
+  const h=hit(p);
+  if(h){
+    if(e.shiftKey)sel.has(h.id)?sel.delete(h.id):sel.add(h.id);
+    else if(!sel.has(h.id)){sel.clear();sel.add(h.id);}
+    snapshot();
+    drag={px:p.x,py:p.y,orig:selItems().map(o=>({o,x:o.x,y:o.y}))};
+    svg.setPointerCapture(e.pointerId);render();
+  }else{
+    if(!e.shiftKey)sel.clear();
+    marq={x0:p.x,y0:p.y,x1:p.x,y1:p.y};svg.setPointerCapture(e.pointerId);render();
+  }
+});
+svg.addEventListener('pointermove',e=>{
+  if(pan){
+    view.x=pan.vx-(e.clientX-pan.cx)/pan.rw*view.w;
+    view.y=pan.vy-(e.clientY-pan.cy)/pan.rh*view.h;
+    applyView(); return;
+  }
+  const p=pt(e);
+  if(endDrag){
+    gFromEnds(endDrag.g,endDrag.fixed,{x:snap(p.x),y:snap(p.y)}); render(); return;
+  }
+  if(guideDrag){
+    render();
+    const b={x:snap(p.x),y:snap(p.y)};
+    el('line',{x1:X(guideDrag.a.x),y1:Y(guideDrag.a.y),x2:X(b.x),y2:Y(b.y),
+      stroke:'var(--gold)','stroke-width':1.4,'stroke-dasharray':'8 5'},gOverlay);
+    guideDrag.b=b; return;
+  }
+  if(rowDrag){
+    rowDrag.b={x:snap(p.x),y:snap(p.y)}; render();
+    const pts=rowPoints(rowDrag.a,rowDrag.b);
+    el('line',{x1:X(rowDrag.a.x),y1:Y(rowDrag.a.y),x2:X(rowDrag.b.x),y2:Y(rowDrag.b.y),
+      stroke:'var(--sel)','stroke-width':1,'stroke-dasharray':'5 4'},gOverlay);
+    pts.forEach(q=>drawItem(q,gOverlay,true));
+    const len=Math.hypot(rowDrag.b.x-rowDrag.a.x,rowDrag.b.y-rowDrag.a.y);
+    el('text',{x:X((rowDrag.a.x+rowDrag.b.x)/2),y:Y((rowDrag.a.y+rowDrag.b.y)/2)-13,fill:'var(--sel)',
+      'font-family':'IBM Plex Mono, monospace','font-size':12,'text-anchor':'middle'},gOverlay)
+      .textContent=pts.length+' chairs · '+ftin(len);
+  } else if(drag){
+    const dx=snap(p.x-drag.px), dy=snap(p.y-drag.py);
+    drag.orig.forEach(o=>{o.o.x=o.x+dx;o.o.y=o.y+dy;});render();
+  } else if(marq){
+    marq.x1=p.x;marq.y1=p.y;render();
+    const x=Math.min(marq.x0,marq.x1),y=Math.min(marq.y0,marq.y1);
+    el('rect',{x:X(x),y:Y(y),width:Math.abs(marq.x1-marq.x0)*FT,height:Math.abs(marq.y1-marq.y0)*FT,
+      fill:'rgba(27,111,168,.12)',stroke:'var(--sel)','stroke-width':1,'stroke-dasharray':'4 3'},gOverlay);
+  }
+});
+function endPtr(e){
+  if(pan){pan=null;try{svg.releasePointerCapture(e.pointerId);}catch(_){} return;}
+  if(endDrag){endDrag=null;try{svg.releasePointerCapture(e.pointerId);}catch(_){} render(); return;}
+  if(guideDrag){
+    const b=guideDrag.b||guideDrag.a;
+    const len=Math.hypot(b.x-guideDrag.a.x,b.y-guideDrag.a.y);
+    if(len>0.6){
+      const o={id:nextId++,t:'guide',x:0,y:0,r:0,len:1};
+      gFromEnds(o,guideDrag.a,b); items.push(o); sel=new Set([o.id]);
+    }
+    guideDrag=null; try{svg.releasePointerCapture(e.pointerId);}catch(_){} render(); return;
+  }
+  if(rowDrag){
+    const pts=rowPoints(rowDrag.a,rowDrag.b), ns=new Set();
+    pts.forEach(q=>{ns.add(addChair(q.x,q.y,q.r,q.w,q.d,true).id);});
+    sel=ns; rowDrag=null; render();
+  }
+  if(marq){
+    const x0=Math.min(marq.x0,marq.x1),x1=Math.max(marq.x0,marq.x1);
+    const y0=Math.min(marq.y0,marq.y1),y1=Math.max(marq.y0,marq.y1);
+    if(Math.abs(x1-x0)>0.3||Math.abs(y1-y0)>0.3)
+      items.forEach(o=>{if(o.x>=x0&&o.x<=x1&&o.y>=y0&&o.y<=y1)sel.add(o.id);});
+    marq=null;render();
+  }
+  drag=null;try{svg.releasePointerCapture(e.pointerId);}catch(_){}
+}
+svg.addEventListener('pointerup',endPtr);
+svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('keydown',e=>{
+  const st=e.shiftKey?1:0.25, k=e.key;
+  if(k==='ArrowLeft'){moveSel(-st,0);e.preventDefault();}
+  else if(k==='ArrowRight'){moveSel(st,0);e.preventDefault();}
+  else if(k==='ArrowUp'){moveSel(0,-st);e.preventDefault();}
+  else if(k==='ArrowDown'){moveSel(0,st);e.preventDefault();}
+  else if(k==='r'||k==='R'){rotateSel(e.shiftKey?-5:5);e.preventDefault();}
+  else if(k==='f'||k==='F'){snapshot();selItems().forEach(o=>o.r=norm(o.r+180));render();e.preventDefault();}
+  else if(k==='Delete'||k==='Backspace'){snapshot();items=items.filter(o=>!sel.has(o.id));sel.clear();render();e.preventDefault();}
+  else if(k==='Escape'){sel.clear();render();}
+});
+
+/* ---------------- controls ---------------- */
+const MB=[['mSel','select'],['mChair','chair'],['mRow','row'],['mTable','table'],['mLabel','label'],['mAim','aim']];
+function setMode(m){mode=m;MB.forEach(([id,v])=>document.getElementById(id).setAttribute('aria-pressed',m===v));}
+MB.forEach(([id,v])=>document.getElementById(id).onclick=()=>setMode(v));
+[['t5',5],['t6',6],['t8',8]].forEach(([id,v])=>document.getElementById(id).onclick=()=>{
+  tShape='rect'; document.getElementById('tLen').value=v; setMode('table');});
+[['r36',36,4],['r48',48,6],['r60',60,8]].forEach(([id,v,seats])=>document.getElementById(id).onclick=()=>{
+  tShape='round'; document.getElementById('tDia').value=v;
+  document.getElementById('sRound').value=seats; setMode('table');});
+document.getElementById('rotL').onclick=()=>rotateSel(-5);
+document.getElementById('rotR').onclick=()=>rotateSel(5);
+document.getElementById('rot15L').onclick=()=>rotateSel(-15);
+document.getElementById('rot15R').onclick=()=>rotateSel(15);
+document.getElementById('rot45L').onclick=()=>rotateSel(-45);
+document.getElementById('rot45R').onclick=()=>rotateSel(45);
+document.getElementById('aimSel').onclick=()=>{
+  if(!focal){alert('Drop a focal point first with the Aim tool.');return;}
+  snapshot(); selItems().forEach(o=>o.r=norm(facingTo(o.x,o.y,focal.x,focal.y)));render();};
+document.getElementById('seatBtn').onclick=()=>{
+  const tbs=selItems().filter(o=>o.t==='table');
+  if(!tbs.length){alert('Select one or more tables first.');return;}
+  snapshot(); tbs.forEach(seatTable); render();};
+document.getElementById('unseatBtn').onclick=()=>{
+  const ids=new Set(selItems().filter(o=>o.t==='table').map(o=>o.id));
+  if(!ids.size){alert('Select the tables whose chairs you want removed.');return;}
+  snapshot(); items=items.filter(o=>!(o.t==='chair'&&ids.has(o.ofTable))); render();};
+document.getElementById('editLab').onclick=()=>{
+  const l=selItems().filter(o=>o.t==='label');
+  if(l.length!==1){alert('Select exactly one label.');return;}
+  const t=prompt('Label text',l[0].text); if(t!==null){snapshot();l[0].text=t;render();}};
+document.getElementById('dup').onclick=()=>{
+  const s=selItems(); if(!s.length)return; snapshot();
+  const back=gv('dupGap')/12, ns=new Set();
+  s.forEach(o=>{const a=o.r/DEG, vx=Math.sin(a), vy=-Math.cos(a);
+    const nx=o.x-vx*back, ny=o.y-vy*back;
+    const c=Object.assign({},o,{id:nextId,x:snap(nx),y:snap(ny)});
+    if(o.t==='chair'&&ck('aimOn')&&focal)c.r=norm(facingTo(nx,ny,focal.x,focal.y));
+    items.push(c); ns.add(nextId++);});
+  sel=ns;render();};
+document.getElementById('del').onclick=()=>{snapshot();items=items.filter(o=>!sel.has(o.id));sel.clear();render();};
+document.getElementById('selAll').onclick=()=>{sel=new Set(items.map(o=>o.id));render();};
+document.getElementById('clear').onclick=()=>{if(confirm('Remove everything?')){snapshot();items=[];sel.clear();focal=null;
+  document.getElementById('tNext').value=1;render();}};
+['chW','chD','tgt','gSize','gMaj','tWid','tDia'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+document.getElementById('chPre').addEventListener('change',e=>{
+  const v=e.target.value; if(!v)return;
+  const [w,d]=v.split(','); document.getElementById('chW').value=w; document.getElementById('chD').value=d;});
+document.getElementById('resizeSel').onclick=()=>{
+  const c=selItems().filter(o=>o.t==='chair');
+  if(!c.length){alert('Select the chairs you want resized.');return;}
+  snapshot(); c.forEach(o=>{o.w=chW();o.d=chD();}); render();};
+['gOn','pOn'].forEach(id=>document.getElementById(id).addEventListener('change',render));
+document.getElementById('print').onclick=()=>{
+  const keep={x:view.x,y:view.y,w:view.w,h:view.h};
+  sel.clear(); printing=true; fitView(); render();
+  setTimeout(()=>{
+    window.print();
+    printing=false; view=keep; applyView(); render();
+  },120);};
+window.addEventListener('beforeprint',()=>{printing=true;fitView();render();});
+window.addEventListener('afterprint',()=>{printing=false;render();});
+document.getElementById('save').onclick=()=>{
+  try{localStorage.setItem('barnLayout',JSON.stringify({items,focal,next:nextId}));alert('Saved in this browser.');}
+  catch(_){alert('Could not save here. Print to PDF instead.');}};
+document.getElementById('load').onclick=()=>{
+  try{const d=JSON.parse(localStorage.getItem('barnLayout')||'null');
+    if(!d||!d.items){alert('Nothing saved yet.');return;}
+    snapshot(); items=d.items; focal=d.focal||null; nextId=d.next||(items.length+1); sel.clear(); render();}
+  catch(_){alert('Nothing to load.');}};
+
+document.getElementById('showJson').onclick=async()=>{
+  const box=document.getElementById('jsonBox'), lb=document.getElementById('loadJson');
+  box.style.display='block'; lb.style.display='block';
+  box.value=JSON.stringify({v:1,items,focal,nextId});
+  box.focus(); box.select();
+  let msg='Copy this text and keep it somewhere safe.';
+  try{await navigator.clipboard.writeText(box.value); msg='Copied to your clipboard.';}catch(_){}
+  document.getElementById('autoNote').textContent=msg;};
+document.getElementById('loadJson').onclick=()=>{
+  const box=document.getElementById('jsonBox');
+  try{
+    const d=JSON.parse(box.value);
+    if(!d||!Array.isArray(d.items))throw 0;
+    snapshot(); items=d.items; focal=d.focal||null;
+    nextId=d.nextId||(items.reduce((m,o)=>Math.max(m,o.id),0)+1);
+    sel.clear(); render();
+    document.getElementById('autoNote').textContent='Layout restored from text.';
+  }catch(_){alert('That text is not a barn layout.');}};
+
+document.getElementById('zIn').onclick=()=>zoomAbout(1/1.25,view.x+view.w/2,view.y+view.h/2);
+document.getElementById('zOut').onclick=()=>zoomAbout(1.25,view.x+view.w/2,view.y+view.h/2);
+document.getElementById('zFit').onclick=fitView;
+
+document.getElementById('mGuide').onclick=()=>setMode('guide');
+document.getElementById('guOn').addEventListener('change',render);
+document.getElementById('fillGuide').onclick=()=>{
+  const g=oneGuide(); if(!g){alert('Select exactly one guide line.');return;}
+  const sp=gv('rowGap')/12, n=Math.max(1,Math.floor(g.len/sp+1e-6)+1);
+  snapshot(); const ns=new Set();
+  placeAlong(g,n,sp,(i,x,y,r)=>{ns.add(addChair(x,y,r,chW(),chD(),true).id);});
+  sel=ns; render();};
+document.getElementById('snapGuide').onclick=()=>{
+  const g=oneGuide(); if(!g){alert('Select one guide line plus the chairs you want on it.');return;}
+  const c=selItems().filter(o=>o.t==='chair');
+  if(!c.length){alert('Select some chairs as well as the guide.');return;}
+  const sp=gv('rowGap')/12, [ux,uy]=gDir(g);
+  c.sort((a,b)=>((a.x-g.x)*ux+(a.y-g.y)*uy)-((b.x-g.x)*ux+(b.y-g.y)*uy));
+  snapshot();
+  placeAlong(g,c.length,sp,(i,x,y,r)=>{c[i].x=x;c[i].y=y;c[i].r=norm(r);});
+  render();};
+document.getElementById('respace').onclick=()=>{
+  const c=selItems().filter(o=>o.t==='chair');
+  if(c.length<2){alert('Select two or more chairs.');return;}
+  const sp=gv('rowGap')/12;
+  const cx=c.reduce((a,o)=>a+o.x,0)/c.length, cy=c.reduce((a,o)=>a+o.y,0)/c.length;
+  let bi=0,bj=1,bd=-1;
+  for(let i=0;i<c.length;i++)for(let j=i+1;j<c.length;j++){
+    const d=Math.hypot(c[i].x-c[j].x,c[i].y-c[j].y); if(d>bd){bd=d;bi=i;bj=j;}}
+  let ux=c[bj].x-c[bi].x, uy=c[bj].y-c[bi].y; const L2=Math.hypot(ux,uy)||1; ux/=L2; uy/=L2;
+  c.sort((a,b)=>((a.x-cx)*ux+(a.y-cy)*uy)-((b.x-cx)*ux+(b.y-cy)*uy));
+  snapshot();
+  const start=-(c.length-1)/2*sp;
+  c.forEach((o,i)=>{const t=start+i*sp; o.x=cx+ux*t; o.y=cy+uy*t;});
+  render();};
+
+document.getElementById('undoBtn').onclick=undo;
+document.getElementById('redoBtn').onclick=redo;
+document.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='select'||tag==='textarea')return;
+  if((e.metaKey||e.ctrlKey)&&(e.key==='z'||e.key==='Z')){e.preventDefault(); e.shiftKey?redo():undo();}
+  else if((e.metaKey||e.ctrlKey)&&(e.key==='y'||e.key==='Y')){e.preventDefault(); redo();}
+});
+
+document.getElementById('export').onclick=()=>{
+  const blob=new Blob([JSON.stringify({v:1,saved:new Date().toISOString(),items,focal,nextId},null,1)],
+    {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='barn-layout-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      if(!d||!Array.isArray(d.items))throw 0;
+      snapshot();
+      items=d.items; focal=d.focal||null;
+      nextId=d.nextId||(items.reduce((m,o)=>Math.max(m,o.id),0)+1);
+      sel.clear(); render();
+    }catch(_){alert('That file is not a barn layout.');}
+    e.target.value='';
+  };
+  rd.readAsText(f);});
+
+/* pick up where we left off */
+(function(){
+  try{
+    const d=JSON.parse(localStorage.getItem('barnLayoutAuto')||'null');
+    if(d&&Array.isArray(d.items)&&d.items.length){
+      items=d.items; focal=d.focal||null;
+      nextId=d.nextId||(items.reduce((m,o)=>Math.max(m,o.id),0)+1);
+    }
+  }catch(_){}
+})();
+
+render(); updUndo();
+</script>
+</body>
+</html>
