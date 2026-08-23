@@ -73,6 +73,12 @@ kbd{font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--
 
 <div class="wrap">
   <div class="sheet">
+    <div id="errBar" style="display:none;background:#8C1D24;color:#F5F1E7;padding:8px 12px;margin-bottom:8px;
+      font-family:'IBM Plex Mono',monospace;font-size:12px"></div>
+    <div id="statusBar" style="display:flex;justify-content:space-between;gap:12px;padding:6px 10px;
+      background:rgba(255,255,255,.5);border:1px solid var(--rule);border-bottom:0;
+      font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em">
+      <span id="statTool">Tool: Select</span><span id="statHint"></span></div>
     <div class="drawing"><svg id="plan" tabindex="0"></svg></div>
     <p class="tip"><kbd>R</kbd> rotate 5&deg; &middot; <kbd>Shift R</kbd> reverse &middot; <kbd>F</kbd> flip &middot; arrows nudge &middot;
       <kbd>Delete</kbd> remove &middot; <kbd>Ctrl Z</kbd> undo &middot; <kbd>Shift</kbd>+click multi-select &middot; drag a box to select.</p>
@@ -264,7 +270,14 @@ function autosave(){
 function snapshot(){undoStack.push(stateStr()); if(undoStack.length>80)undoStack.shift();
   redoStack.length=0; updUndo();}
 function restore(str){const d=JSON.parse(str); items=d.items; focal=d.focal; nextId=d.nextId;
-  sel.clear(); render(); updUndo();}
+  sel.clear(); window.addEventListener('error',ev=>{
+  const b=document.getElementById('errBar');
+  if(b){b.style.display='block';
+    b.textContent='Something broke — tell Claude this: '+(ev.message||'unknown')+
+      '  ('+(ev.filename||'').split('/').pop()+' line '+(ev.lineno||'?')+')';}
+});
+
+render(); updUndo(); setMode('select');}
 function undo(){if(!undoStack.length)return; redoStack.push(stateStr()); restore(undoStack.pop());}
 function redo(){if(!redoStack.length)return; undoStack.push(stateStr()); restore(redoStack.pop());}
 function updUndo(){
@@ -452,8 +465,12 @@ function render(){
 }
 
 /* ---------------- geometry ---------------- */
-function pt(e){const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
-  return{x:((e.clientX-r.left)/r.width*vb.width-M)/FT,y:((e.clientY-r.top)/r.height*vb.height-M)/FT};}
+function pt(e){
+  const r=svg.getBoundingClientRect();
+  /* the viewBox origin moves when you pan or zoom — it has to be in the sum */
+  const ux=view.x+(e.clientX-r.left)/r.width*view.w;
+  const uy=view.y+(e.clientY-r.top)/r.height*view.h;
+  return{x:(ux-M)/FT,y:(uy-M)/FT};}
 function bounds(o){
   if(o.t==='chair')return[cw(o),cd(o)];
   if(o.t==='table')return o.shape==='round'?[o.dia,o.dia]:[o.len,o.wid];
@@ -564,6 +581,7 @@ svg.addEventListener('wheel',e=>{
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'&&!/input|select|textarea/i.test(e.target.tagName||'')){spaceDown=true;e.preventDefault();}});
 document.addEventListener('keyup',e=>{if(e.code==='Space')spaceDown=false;});
+window.addEventListener('blur',()=>{spaceDown=false;});
 svg.addEventListener('pointerdown',e=>{
   svg.focus();
   if(spaceDown||e.button===1||ck('panMode')){
@@ -682,10 +700,30 @@ svg.addEventListener('keydown',e=>{
 
 /* ---------------- controls ---------------- */
 const MB=[['mSel','select'],['mChair','chair'],['mRow','row'],['mTable','table'],['mLabel','label'],['mAim','aim']];
-function setMode(m){mode=m;MB.forEach(([id,v])=>document.getElementById(id).setAttribute('aria-pressed',m===v));}
+function setMode(m){
+  mode=m;
+  MB.forEach(([id,v])=>document.getElementById(id).setAttribute('aria-pressed',m===v));
+  const names={select:'Select',chair:'Chair',row:'Row',table:'Table',label:'Label',aim:'Aim',guide:'Guide'};
+  const hints={
+    select:'click an item, or drag a box',
+    chair:'click the floor to place one chair',
+    row:'drag a line across the floor',
+    table:'click the floor to drop the table',
+    label:'click the floor to drop the text',
+    aim:'click where the couple will stand',
+    guide:'drag to draw a guide line'};
+  let extra='';
+  if(m==='table') extra = tShape==='round'
+      ? '  ('+Math.round(gv('tDia'))+'" round)'
+      : '  ('+gv('tLen')+' ft rectangle)';
+  const t=document.getElementById('statTool'), h=document.getElementById('statHint');
+  if(t)t.textContent='Tool: '+(names[m]||m)+extra;
+  if(h)h.textContent=hints[m]||'';
+}
 MB.forEach(([id,v])=>document.getElementById(id).onclick=()=>setMode(v));
 [['t5',5],['t6',6],['t8',8]].forEach(([id,v])=>document.getElementById(id).onclick=()=>{
   tShape='rect'; document.getElementById('tLen').value=v; setMode('table');});
+document.getElementById('tLen').addEventListener('input',()=>{if(mode==='table')setMode('table');});
 [['r36',36,4],['r48',48,6],['r60',60,8]].forEach(([id,v,seats])=>document.getElementById(id).onclick=()=>{
   tShape='round'; document.getElementById('tDia').value=v;
   document.getElementById('sRound').value=seats; setMode('table');});
@@ -849,7 +887,14 @@ document.getElementById('importFile').addEventListener('change',e=>{
   }catch(_){}
 })();
 
-render(); updUndo();
+window.addEventListener('error',ev=>{
+  const b=document.getElementById('errBar');
+  if(b){b.style.display='block';
+    b.textContent='Something broke — tell Claude this: '+(ev.message||'unknown')+
+      '  ('+(ev.filename||'').split('/').pop()+' line '+(ev.lineno||'?')+')';}
+});
+
+render(); updUndo(); setMode('select');
 </script>
 </body>
 </html>
